@@ -1,3 +1,3 @@
 # Flutter Movie App
 
-[![Tutorial](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![Tutorial](https://img.youtube.com/vi/soTEOI_rIIQ/0.jpg)](https://www.youtube.com/watch?v=soTEOI_rIIQ)
