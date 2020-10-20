@@ -11,7 +11,14 @@ class MovieApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: HomePage(),
+      home: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          centerTitle: true,
+          title: Text('Moviiies'),
+        ),
+        body: HomePage(),
+      ),
     );
   }
 }
