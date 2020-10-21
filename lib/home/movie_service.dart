@@ -6,7 +6,7 @@ import 'package:movieapp/home/movies_exception.dart';
 import 'movie.dart';
 
 final movieServiceProvider = Provider<MovieService>((ref) {
-  final config = ref.read(environmentConfigProvider);
+  final config = ref.watch(environmentConfigProvider);
 
   return MovieService(config, Dio());
 });

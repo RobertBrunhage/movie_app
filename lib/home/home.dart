@@ -10,7 +10,7 @@ import 'movie.dart';
 final moviesFutureProvider = FutureProvider.autoDispose<List<Movie>>((ref) async {
   ref.maintainState = true;
 
-  final movieService = ref.read(movieServiceProvider);
+  final movieService = ref.watch(movieServiceProvider);
   final movies = await movieService.getMovies();
   return movies;
 });
