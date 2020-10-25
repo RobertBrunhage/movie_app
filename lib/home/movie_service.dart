@@ -39,5 +39,6 @@ class MovieManager {
   MovieManager() {
     updateMoviesCmd = Command.createAsyncNoParam(
         () => GetIt.I<MovieService>().getMovies(), []);
+    updateMoviesCmd();
   }
 }

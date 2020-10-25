@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:movieapp/home/movie_service.dart';
 import 'package:movieapp/home/movies_exception.dart';
@@ -12,34 +13,28 @@ class HomePage extends StatelessWidget with GetItMixin {
   Widget build(
     BuildContext context,
   ) {
-    final error = watchX(
-        (MovieManager manager) => manager.updateMoviesCmd.thrownExceptions);
-    final busy = watchX(
-        (MovieManager manager) => manager.updateMoviesCmd.isExecuting);
-    final     
-        if (error != null)
-        {
-        if (error.error is MoviesException) {
-          return _ErrorBody(message: error.error.toString());
-        }
-        return _ErrorBody(message: "Oops, something unexpected happened");
-        }
+    final movies =
+        watchX((MovieManager manager) => manager.updateMoviesCmd.results);
 
-     loading: () => Center(child: CircularProgressIndicator()),
-      data: (movies) {
-        return RefreshIndicator(
-          onRefresh: () {
-            return context.refresh(moviesFutureProvider);
-          },
-          child: GridView.extent(
-            maxCrossAxisExtent: 200,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.7,
-            children: movies.map((movie) => _MovieBox(movie: movie)).toList(),
-          ),
-        );
-      },
+    if (movies.hasError) {
+      if (movies.error is MoviesException) {
+        return _ErrorBody(message: movies.error.toString());
+      }
+      return _ErrorBody(message: "Oops, something unexpected happened");
+    }
+    if (movies.isExecuting) {
+      return Center(child: CircularProgressIndicator());
+    }
+    assert(movies.hasData);
+    return RefreshIndicator(
+      onRefresh: () => get<MovieManager>().updateMoviesCmd.executeWithFuture(),
+      child: GridView.extent(
+        maxCrossAxisExtent: 200,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.7,
+        children: movies.data.map((movie) => _MovieBox(movie: movie)).toList(),
+      ),
     );
   }
 }
@@ -61,7 +56,7 @@ class _ErrorBody extends StatelessWidget {
         children: [
           Text(message),
           ElevatedButton(
-            onPressed: () => context.refresh(moviesFutureProvider),
+            onPressed: GetIt.I<MovieManager>().updateMoviesCmd,
             child: Text("Try again"),
           ),
         ],

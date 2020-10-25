@@ -6,10 +6,12 @@ import 'package:movieapp/home/movie_service.dart';
 import 'movie_app.dart';
 
 void main() {
+  setUpLocator();
   runApp(MovieApp());
 }
 
 void setUpLocator() {
   GetIt.I.registerSingleton(EnvironmentConfig());
   GetIt.I.registerSingleton(MovieService());
+  GetIt.I.registerSingleton(MovieManager());
 }
