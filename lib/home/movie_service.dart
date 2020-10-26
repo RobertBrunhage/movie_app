@@ -16,6 +16,7 @@ class MovieService {
   Dio _dio;
 
   Future<List<Movie>> getMovies() async {
+    await Future.delayed(Duration(milliseconds: 500));
     try {
       final response = await _dio.get(
         "https://api.themoviedb.org/3/movie/popular?api_key=${_environmentConfig.movieApiKey}&language=en-US&page=1",

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home/home.dart';
+import 'home/home3.dart';
 
 class MovieApp extends StatelessWidget {
   @override

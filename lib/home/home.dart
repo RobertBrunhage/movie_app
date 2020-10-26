@@ -13,9 +13,13 @@ class HomePage extends StatelessWidget with GetItMixin {
   Widget build(
     BuildContext context,
   ) {
+    /// watchX will make sure that this Widget is rebuild whenever the state of the
+    /// `updateMoviesCmd` changed.
     final movies =
         watchX((MovieManager manager) => manager.updateMoviesCmd.results);
 
+    /// this here shows the most manual way to build with data of a Command
+    /// for more elegant possibilities please check out hom2.dart and home3.dart
     if (movies.hasError) {
       if (movies.error is MoviesException) {
         return _ErrorBody(message: movies.error.toString());
@@ -56,6 +60,7 @@ class _ErrorBody extends StatelessWidget {
         children: [
           Text(message),
           ElevatedButton(
+            // for just one access to GetIt the Mixin would be overkill
             onPressed: GetIt.I<MovieManager>().updateMoviesCmd,
             child: Text("Try again"),
           ),

@@ -26,6 +26,8 @@ class MoviesException implements Exception {
         break;
     }
   }
+  @override
+  String toString() => message;
 
   String message;
 
