@@ -2,47 +2,47 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
-import 'package:movieapp/home/movie_service.dart';
-import 'package:movieapp/home/movies_exception.dart';
+import 'package:movieapp/home/movie_pagination_controller.dart';
 
 import 'movie.dart';
-
-final moviesFutureProvider = FutureProvider.autoDispose<List<Movie>>((ref) async {
-  ref.maintainState = true;
-
-  final movieService = ref.watch(movieServiceProvider);
-  final movies = await movieService.getMovies();
-  return movies;
-});
 
 class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
+    final paginationController = watch(moviePaginationControllerProvider);
+    final paginationState = watch(moviePaginationControllerProvider.state);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         title: Text('Moviiies'),
       ),
-      body: watch(moviesFutureProvider).when(
-        error: (e, s) {
-          if (e is MoviesException) {
-            return _ErrorBody(message: e.message);
+      body: Builder(
+        builder: (context) {
+          if (paginationState.refreshError) {
+            return _ErrorBody(message: paginationState.errorMessage);
+          } else if (paginationState.movies.isEmpty) {
+            return Center(child: CircularProgressIndicator());
           }
-          return _ErrorBody(message: "Oops, something unexpected happened");
-        },
-        loading: () => Center(child: CircularProgressIndicator()),
-        data: (movies) {
           return RefreshIndicator(
             onRefresh: () {
-              return context.refresh(moviesFutureProvider);
+              return context.refresh(moviePaginationControllerProvider).getMovies();
             },
-            child: GridView.extent(
-              maxCrossAxisExtent: 200,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.7,
-              children: movies.map((movie) => _MovieBox(movie: movie)).toList(),
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.7,
+              ),
+              itemCount: paginationState.movies.length,
+              itemBuilder: (context, index) {
+                // use the index for pagination
+                paginationController.handleScrollWithIndex(index);
+
+                return _MovieBox(movie: paginationState.movies[index]);
+              },
             ),
           );
         },
@@ -68,7 +68,7 @@ class _ErrorBody extends StatelessWidget {
         children: [
           Text(message),
           ElevatedButton(
-            onPressed: () => context.refresh(moviesFutureProvider),
+            onPressed: () => context.refresh(moviePaginationControllerProvider).getMovies(),
             child: Text("Try again"),
           ),
         ],
@@ -90,6 +90,11 @@ class _MovieBox extends StatelessWidget {
           movie.fullImageUrl,
           fit: BoxFit.cover,
           width: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return Center(
+              child: Icon(Icons.error),
+            );
+          },
         ),
         Positioned(
           bottom: 0,
