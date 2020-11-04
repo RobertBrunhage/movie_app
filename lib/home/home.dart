@@ -9,6 +9,7 @@ import 'package:movieapp/home/movies_exception.dart';
 import 'movie.dart';
 
 class HomePage extends StatelessWidget with GetItMixin {
+
   @override
   Widget build(
     BuildContext context,

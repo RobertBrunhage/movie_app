@@ -6,6 +6,7 @@ import 'package:movieapp/home/movies_exception.dart';
 
 import 'movie.dart';
 
+
 class MovieService {
   MovieService([this._environmentConfig, this._dio]) {
     _environmentConfig ??= GetIt.I<EnvironmentConfig>();
