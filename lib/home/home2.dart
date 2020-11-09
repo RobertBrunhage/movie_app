@@ -11,9 +11,7 @@ import 'movie.dart';
 
 class HomePage extends StatelessWidget with GetItMixin {
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     /// watchX will make sure that this Widget is rebuild whenever the state of the
     /// `updateMoviesCmd` changed.
     final movies =
@@ -29,8 +27,7 @@ class HomePage extends StatelessWidget with GetItMixin {
       },
       whileExecuting: (_, __) => Center(child: CircularProgressIndicator()),
       onResult: (data, _) => RefreshIndicator(
-        onRefresh: () =>
-            get<MovieManager>().updateMoviesCmd.executeWithFuture(),
+        onRefresh: get<MovieManager>().updateMoviesCmd.executeWithFuture,
         child: GridView.extent(
           maxCrossAxisExtent: 200,
           crossAxisSpacing: 12,

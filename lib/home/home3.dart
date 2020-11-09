@@ -12,9 +12,7 @@ import 'movie.dart';
 
 class HomePage extends StatelessWidget with GetItMixin {
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     registerHandler(
         (MovieManager manager) =>
             manager.updateMoviesCmd.thrownExceptions.where((x) => x != null),
