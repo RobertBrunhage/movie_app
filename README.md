@@ -2,7 +2,7 @@
 
 [![Tutorial](https://img.youtube.com/vi/soTEOI_rIIQ/0.jpg)](https://www.youtube.com/watch?v=soTEOI_rIIQ)
 
-This is an implementation using get_it, get_it_mixin and flutter_command.
+This is an implementation using get_it, get_it_mixin, flutter_command and functional_listener.
 Instead of flutter_command I could have added some `ValueNotifiers` but
 as a `Command` already has all of them build-in, I decided to use it too here
 
