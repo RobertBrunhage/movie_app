@@ -26,6 +26,8 @@ class MoviesException implements Exception {
         break;
     }
   }
+  @override
+  String toString() => message;
 
   String message;
 
@@ -41,7 +43,4 @@ class MoviesException implements Exception {
         return 'Oops something went wrong';
     }
   }
-
-  @override
-  String toString() => message;
 }

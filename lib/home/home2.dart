@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_command/flutter_command.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:movieapp/home/movie_service.dart';
@@ -9,36 +10,32 @@ import 'package:movieapp/home/movies_exception.dart';
 import 'movie.dart';
 
 class HomePage extends StatelessWidget with GetItMixin {
-
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     /// watchX will make sure that this Widget is rebuild whenever the state of the
     /// `updateMoviesCmd` changed.
     final movies =
         watchX((MovieManager manager) => manager.updateMoviesCmd.results);
 
-    /// this here shows the most manual way to build with data of a Command
-    /// for more elegant possibilities please check out hom2.dart and home3.dart
-    if (movies.hasError) {
-      if (movies.error is MoviesException) {
-        return _ErrorBody(message: movies.error.toString());
-      }
-      return _ErrorBody(message: "Oops, something unexpected happened");
-    }
-    if (movies.isExecuting) {
-      return Center(child: CircularProgressIndicator());
-    }
-    assert(movies.hasData);
-    return RefreshIndicator(
-      onRefresh: () => get<MovieManager>().updateMoviesCmd.executeWithFuture(),
-      child: GridView.extent(
-        maxCrossAxisExtent: 200,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.7,
-        children: movies.data.map((movie) => _MovieBox(movie: movie)).toList(),
+    /// Making the building a bit more elegant:
+    return movies.toWidget(
+      onError: (error, _, __) {
+        if (movies.error is MoviesException) {
+          return _ErrorBody(message: movies.error.toString());
+        }
+        return _ErrorBody(message: "Oops, something unexpected happened");
+      },
+      whileExecuting: (_, __) => Center(child: CircularProgressIndicator()),
+      onResult: (data, _) => RefreshIndicator(
+        onRefresh: get<MovieManager>().updateMoviesCmd.executeWithFuture,
+        child: GridView.extent(
+          maxCrossAxisExtent: 200,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.7,
+          children:
+              movies.data.map((movie) => _MovieBox(movie: movie)).toList(),
+        ),
       ),
     );
   }

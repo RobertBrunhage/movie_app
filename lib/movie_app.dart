@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home/home.dart';
+import 'home/home3.dart';
 
 class MovieApp extends StatelessWidget {
   @override
@@ -11,7 +11,14 @@ class MovieApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: HomePage(),
+      home: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          centerTitle: true,
+          title: Text('Moviiies'),
+        ),
+        body: HomePage(),
+      ),
     );
   }
 }
