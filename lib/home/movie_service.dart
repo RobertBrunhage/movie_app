@@ -1,21 +1,26 @@
+import 'package:binder/binder.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movieapp/environment_config.dart';
 import 'package:movieapp/home/movies_exception.dart';
 
+import '../environment_config.dart';
 import 'movie.dart';
 
-final movieServiceProvider = Provider<MovieService>((ref) {
-  final config = ref.watch(environmentConfigProvider);
+final errorRef = StateRef<String>(null);
 
-  return MovieService(config, Dio());
-});
+final moviesRef = StateRef<List<Movie>>(null);
 
-class MovieService {
-  MovieService(this._environmentConfig, this._dio);
+final movieServiceRef = LogicRef((scope) => MovieService(scope, Dio()));
 
-  final EnvironmentConfig _environmentConfig;
+class MovieService with Logic implements Loadable {
+  const MovieService(this.scope, this._dio);
+
+  @override
+  final Scope scope;
+
   final Dio _dio;
+
+  EnvironmentConfig get _environmentConfig => read(environmentConfigRef);
 
   Future<List<Movie>> getMovies() async {
     try {
@@ -25,10 +30,25 @@ class MovieService {
 
       final results = List<Map<String, dynamic>>.from(response.data['results']);
 
-      List<Movie> movies = results.map((movieData) => Movie.fromMap(movieData)).toList(growable: false);
+      List<Movie> movies = results
+          .map((movieData) => Movie.fromMap(movieData))
+          .toList(growable: false);
       return movies;
     } on DioError catch (dioError) {
       throw MoviesException.fromDioError(dioError);
+    }
+  }
+
+  @override
+  Future<void> load() async {
+    try {
+      final movies = await getMovies();
+      write(moviesRef, movies);
+      write(errorRef, null);
+    } on MoviesException catch (exception) {
+      write(errorRef, exception.message);
+    } catch (exception) {
+      write(errorRef, 'Oops, something unexpected happened');
     }
   }
 }

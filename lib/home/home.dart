@@ -1,41 +1,40 @@
 import 'dart:ui';
 
+import 'package:binder/binder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
 import 'package:movieapp/home/movie_service.dart';
-import 'package:movieapp/home/movies_exception.dart';
 
 import 'movie.dart';
 
-final moviesFutureProvider = FutureProvider.autoDispose<List<Movie>>((ref) async {
-  ref.maintainState = true;
-
-  final movieService = ref.watch(movieServiceProvider);
-  final movies = await movieService.getMovies();
-  return movies;
-});
-
-class HomePage extends ConsumerWidget {
+class HomePage extends StatelessWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        title: Text('Moviiies'),
-      ),
-      body: watch(moviesFutureProvider).when(
-        error: (e, s) {
-          if (e is MoviesException) {
-            return _ErrorBody(message: e.message);
+  Widget build(BuildContext context) {
+    return LogicLoader(
+      refs: [movieServiceRef],
+      builder: (context, loading, child) {
+        if (loading) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        return child;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          centerTitle: true,
+          title: Text('Moviiies'),
+        ),
+        body: Builder(builder: (context) {
+          final error = context.watch(errorRef);
+
+          if (error != null) {
+            return _ErrorBody(message: error);
           }
-          return _ErrorBody(message: "Oops, something unexpected happened");
-        },
-        loading: () => Center(child: CircularProgressIndicator()),
-        data: (movies) {
+
+          final movies = context.watch(moviesRef);
           return RefreshIndicator(
             onRefresh: () {
-              return context.refresh(moviesFutureProvider);
+              return context.use(movieServiceRef).load();
             },
             child: GridView.extent(
               maxCrossAxisExtent: 200,
@@ -45,7 +44,7 @@ class HomePage extends ConsumerWidget {
               children: movies.map((movie) => _MovieBox(movie: movie)).toList(),
             ),
           );
-        },
+        }),
       ),
     );
   }
@@ -68,7 +67,7 @@ class _ErrorBody extends StatelessWidget {
         children: [
           Text(message),
           ElevatedButton(
-            onPressed: () => context.refresh(moviesFutureProvider),
+            onPressed: () => context.use(movieServiceRef).load(),
             child: Text("Try again"),
           ),
         ],
