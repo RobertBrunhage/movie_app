@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movieapp/environment_config.dart';
-import 'package:movieapp/home/movies_exception.dart';
 
+import '../environment_config.dart';
 import 'movie.dart';
+import 'movies_exception.dart';
 
 final movieServiceProvider = Provider<MovieService>((ref) {
   final config = ref.watch(environmentConfigProvider);
@@ -25,7 +25,9 @@ class MovieService {
 
       final results = List<Map<String, dynamic>>.from(response.data['results']);
 
-      List<Movie> movies = results.map((movieData) => Movie.fromMap(movieData)).toList(growable: false);
+      List<Movie> movies = results
+          .map((movieData) => Movie.fromMap(movieData))
+          .toList(growable: false);
       return movies;
     } on DioError catch (dioError) {
       throw MoviesException.fromDioError(dioError);
