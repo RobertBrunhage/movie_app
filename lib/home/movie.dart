@@ -4,8 +4,8 @@ class Movie {
   String title;
   String posterPath;
   Movie({
-    this.title,
-    this.posterPath,
+    required this.title,
+    required this.posterPath,
   });
 
   String get fullImageUrl => 'https://image.tmdb.org/t/p/w200$posterPath';
@@ -18,11 +18,9 @@ class Movie {
   }
 
   factory Movie.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Movie(
-      title: map['title'],
-      posterPath: map['poster_path'],
+      title: map['title'] ?? '',
+      posterPath: map['poster_path'] ?? '',
     );
   }
 
