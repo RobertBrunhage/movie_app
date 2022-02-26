@@ -9,7 +9,7 @@ class MovieApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Flutter Movie App Demo',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
